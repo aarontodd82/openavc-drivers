@@ -118,6 +118,19 @@
       "transport": "tcp",
       "verified": true,
       "description": "Controls QSC Q-SYS Core processors via the QRC (Q-SYS Remote Control) protocol. Supports named controls, snapshots, and component access across the entire Q-SYS ecosystem."
+    },
+    {
+      "id": "crestron_nvx",
+      "name": "Crestron DM NVX",
+      "file": "displays/crestron_nvx.py",
+      "format": "python",
+      "category": "display",
+      "manufacturer": "Crestron",
+      "version": "1.0.0",
+      "author": "OpenAVC",
+      "transport": "http",
+      "verified": true,
+      "description": "Controls Crestron DM NVX AV-over-IP encoders and decoders via the REST API. Supports device status, video/audio source selection, stream routing, and AV I/O monitoring."
     }
   ]
 }

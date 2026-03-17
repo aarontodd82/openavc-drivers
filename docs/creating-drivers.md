@@ -21,9 +21,9 @@ All three methods produce drivers that work identically at runtime. Choose the s
 **Can the device be controlled with text commands over TCP or serial?**
 (e.g., sending `"POWR ON\r"` and getting back `"POWR=ON\r"`)
 
-- **Yes** -- Use the **Driver Builder UI** or a **JSON definition**.
+- **Yes** -- Use the **Driver Builder UI** or a **.avcdriver definition**.
+- **No, it uses HTTP/REST** -- Use a **.avcdriver definition** with `transport: http`. HTTP commands use `method`, `path`, and `body` fields instead of raw command strings. See the HTTP section below.
 - **No, it uses a binary protocol** -- Use a **Python driver**.
-- **No, it uses HTTP/REST** -- Use a **Python driver** (HTTP transport coming in Phase 4).
 - **No, it uses UDP broadcast** -- Use a **Python driver** (see the Wake-on-LAN driver as an example).
 
 ---
@@ -406,6 +406,172 @@ For protocols that don't use a simple delimiter, you can specify a frame parser:
 ```
 
 Types: `length_prefix` (reads a length header then N bytes), `fixed_length` (messages are always N bytes). For anything more complex, use a Python driver.
+
+### HTTP/REST Drivers (.avcdriver)
+
+For devices controlled via HTTP/REST APIs (Panasonic PTZ cameras, Sony Bravia displays, Crestron DM NVX, Zoom Rooms, etc.), set `transport: http` and use HTTP-specific command fields.
+
+HTTP commands use `method`, `path`, and `body` instead of `string`/`send`:
+
+```yaml
+# Panasonic AW-series PTZ Camera (HTTP CGI control)
+id: panasonic_aw_ptz
+name: Panasonic AW PTZ Camera
+manufacturer: Panasonic
+category: camera
+transport: http
+
+default_config:
+  host: ""
+  port: 80
+  poll_interval: 5
+
+config_schema:
+  host:
+    type: string
+    required: true
+    label: IP Address
+  port:
+    type: integer
+    default: 80
+    label: Port
+  auth_type:
+    type: enum
+    values: ["none", "basic", "digest"]
+    default: "none"
+    label: Authentication
+  username:
+    type: string
+    default: "admin"
+    label: Username
+  password:
+    type: string
+    default: ""
+    label: Password
+    secret: true
+  verify_ssl:
+    type: boolean
+    default: false
+    label: Verify SSL Certificate
+
+state_variables:
+  power:
+    type: enum
+    values: ["off", "on"]
+    label: Power State
+  pan:
+    type: string
+    label: Pan Position
+  tilt:
+    type: string
+    label: Tilt Position
+
+commands:
+  power_on:
+    label: Power On
+    method: GET
+    path: "/cgi-bin/aw_ptz?cmd=%23O1&res=1"
+
+  power_off:
+    label: Power Off
+    method: GET
+    path: "/cgi-bin/aw_ptz?cmd=%23O0&res=1"
+
+  recall_preset:
+    label: Recall Preset
+    method: GET
+    path: "/cgi-bin/aw_ptz?cmd=%23R{preset:02d}&res=1"
+    params:
+      preset:
+        type: integer
+        required: true
+        label: Preset Number
+        min: 1
+        max: 100
+
+  set_pan_tilt:
+    label: Set Pan/Tilt
+    method: GET
+    path: "/cgi-bin/aw_ptz?cmd=%23APC{pan}{tilt}&res=1"
+    params:
+      pan:
+        type: string
+        required: true
+        label: Pan (hex, 4 chars)
+      tilt:
+        type: string
+        required: true
+        label: Tilt (hex, 4 chars)
+
+responses:
+  # Power query response contains "p1" (on) or "p0" (off)
+  - match: 'p1'
+    set: { power: "on" }
+  - match: 'p0'
+    set: { power: "off" }
+
+polling:
+  interval: 5
+  queries:
+    - "/cgi-bin/aw_ptz?cmd=%23O&res=1"
+```
+
+#### HTTP command fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `method` | No | HTTP method: `GET`, `POST`, `PUT`, `DELETE`. Default: `GET`. |
+| `path` | Yes | URL path (appended to `http://host:port`). Supports `{param}` substitution. |
+| `body` | No | Request body (JSON string). Supports `{param}` substitution. Used with POST/PUT. |
+| `query_params` | No | Query parameters as key-value pairs. Supports `{param}` substitution. |
+| `params` | No | Parameter definitions (same as TCP/serial commands). |
+
+#### HTTP config fields
+
+These fields in `config_schema` are recognized by the HTTP transport:
+
+| Field | Description |
+|-------|-------------|
+| `host` | Device IP or hostname (required) |
+| `port` | Port number (default: 80) |
+| `ssl` | Use HTTPS (default: false) |
+| `auth_type` | `"none"`, `"basic"`, `"bearer"`, `"api_key"`, `"digest"` |
+| `username` | For basic/digest auth |
+| `password` | For basic/digest auth |
+| `token` | For bearer auth |
+| `api_key` | For API key auth |
+| `api_key_header` | Header name for API key (default: `X-API-Key`) |
+| `verify_ssl` | Verify HTTPS certificates (default: true, set false for self-signed) |
+| `timeout` | Request timeout in seconds (default: 10) |
+
+#### HTTP polling
+
+For HTTP drivers, polling queries can be:
+- **Command names** — executes that command (e.g., `"get_status"`)
+- **URL paths** — sends a GET request to that path (e.g., `"/api/status"`)
+
+Response text from polled endpoints is matched against `responses` patterns, same as TCP/serial.
+
+#### JSON body with parameter substitution
+
+For REST APIs that expect JSON bodies, use the `body` field. Parameter placeholders `{name}` are substituted, and literal JSON braces are preserved:
+
+```yaml
+commands:
+  set_volume:
+    label: Set Volume
+    method: POST
+    path: "/api/audio"
+    body: '{"channel": "program", "level": {level}}'
+    params:
+      level:
+        type: integer
+        required: true
+        min: 0
+        max: 100
+```
+
+With `level=75`, this sends `POST /api/audio` with body `{"channel": "program", "level": 75}`.
 
 ### Managing Drivers via API
 
