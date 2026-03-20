@@ -54,6 +54,54 @@ Add an entry to the `drivers` array in `index.json`:
 | `transport` | Primary transport: tcp, serial, udp, http |
 | `verified` | Set to `false` for new contributions (maintainers verify) |
 
+## Help Text
+
+Drivers should include help text to assist users and the AI assistant:
+
+- **Driver-level help** (`help.overview` and `help.setup`): What the driver controls and step-by-step connection instructions. Shown in the Add Device dialog.
+- **Command help** (`help` field on each command): What the command does. Shown when selecting commands in the Programmer IDE.
+- **Parameter help** (`help` field on each parameter): What values are expected. Shown below parameter input fields.
+
+Example for a `.avcdriver` file:
+
+```yaml
+help:
+  overview: Controls Extron SIS-compatible switchers over TCP or RS-232.
+  setup: >
+    1. Connect the device to the network.
+    2. Default port is 23 (Extron telnet).
+
+commands:
+  set_input:
+    label: Set Input
+    send: "{input}!"
+    help: Route a specific input to all outputs.
+    params:
+      input:
+        type: integer
+        required: true
+        help: Input number (1-based)
+```
+
+For Python drivers, add help to `DRIVER_INFO`:
+
+```python
+DRIVER_INFO = {
+    # ...
+    "help": {
+        "overview": "Controls Samsung displays via MDC protocol.",
+        "setup": "1. Enable MDC in display settings.\n2. Default port is 1515.",
+    },
+    "commands": {
+        "power_on": {
+            "label": "Power On",
+            "params": {},
+            "help": "Turn on the display.",
+        },
+    },
+}
+```
+
 ## Testing Requirements
 
 - Test all commands against real hardware or a simulator
