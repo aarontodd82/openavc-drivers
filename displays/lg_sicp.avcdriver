@@ -29,6 +29,16 @@ description: >
 transport: tcp
 delimiter: "x"
 
+help:
+  overview: >
+    Controls LG commercial displays via the SICP protocol. Supports power,
+    input selection, volume, mute, and screen mute. Covers webOS Signage,
+    LED, and OLED commercial series.
+  setup: >
+    1. Connect the LG display to the network.
+    2. Default control port is 9761.
+    3. Set the Display ID (01-99, or 00 for broadcast to all displays).
+
 default_config:
   host: ""
   port: 9761
@@ -77,38 +87,47 @@ commands:
   power_on:
     label: Power On
     send: "ka {set_id} 01\r"
+    help: "Turn on the display."
 
   power_off:
     label: Power Off
     send: "ka {set_id} 00\r"
+    help: "Turn off the display (standby)."
 
   set_input_hdmi1:
     label: Input HDMI 1
     send: "xb {set_id} 90\r"
+    help: "Switch to HDMI 1 input."
 
   set_input_hdmi2:
     label: Input HDMI 2
     send: "xb {set_id} 91\r"
+    help: "Switch to HDMI 2 input."
 
   set_input_hdmi3:
     label: Input HDMI 3
     send: "xb {set_id} 92\r"
+    help: "Switch to HDMI 3 input."
 
   set_input_dp:
     label: Input DisplayPort
     send: "xb {set_id} D0\r"
+    help: "Switch to DisplayPort input."
 
   set_input_dvi:
     label: Input DVI
     send: "xb {set_id} 80\r"
+    help: "Switch to DVI input."
 
   set_input_url:
     label: Input URL Launcher
     send: "xb {set_id} E0\r"
+    help: "Switch to URL Launcher (webOS app)."
 
   set_volume:
     label: Set Volume
     send: "kf {set_id} {level:02x}\r"
+    help: "Set the display speaker volume."
     params:
       level:
         type: integer
@@ -116,22 +135,27 @@ commands:
         label: Volume (0-100)
         min: 0
         max: 100
+        help: "Volume level 0-100"
 
   mute_on:
     label: Mute On
     send: "ke {set_id} 00\r"
+    help: "Mute the display audio."
 
   mute_off:
     label: Mute Off
     send: "ke {set_id} 01\r"
+    help: "Unmute the display audio."
 
   screen_mute_on:
     label: Screen Mute On (blank screen)
     send: "kd {set_id} 01\r"
+    help: "Blank the screen (display stays on, useful for presentations)."
 
   screen_mute_off:
     label: Screen Mute Off
     send: "kd {set_id} 00\r"
+    help: "Restore the screen from blank."
 
 responses:
   # Power query response: "a 01 OK01" (on) or "a 01 OK00" (off)

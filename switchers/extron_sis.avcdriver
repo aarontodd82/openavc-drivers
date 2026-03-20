@@ -37,6 +37,16 @@ description: >
 transport: tcp
 delimiter: "\r\n"
 
+help:
+  overview: >
+    Universal control for Extron products using the SIS protocol. Works with
+    200+ products including crosspoint matrix switchers, presentation switchers,
+    scalers, distribution amplifiers, and DSPs.
+  setup: >
+    1. Connect the Extron device to the network or via RS-232 (9600 8N1).
+    2. For TCP control, set the device's IP address and use port 23 (default).
+    3. Extron recommends a 100ms delay between commands (pre-configured).
+
 default_config:
   host: ""
   port: 23
@@ -84,21 +94,25 @@ commands:
   route:
     label: Route Input to Output
     send: "{input}*{output}!"
+    help: "Route a specific input to a specific output on the switcher."
     params:
       input:
         type: integer
         required: true
         label: Input Number
         min: 1
+        help: "Source input number"
       output:
         type: integer
         required: true
         label: Output Number
         min: 1
+        help: "Destination output number"
 
   route_all:
     label: Route Input to All Outputs
     send: "{input}!"
+    help: "Route a single input to all outputs simultaneously."
     params:
       input:
         type: integer
@@ -109,6 +123,7 @@ commands:
   set_volume:
     label: Set Volume
     send: "{level}V"
+    help: "Set the audio volume level."
     params:
       level:
         type: integer
@@ -116,31 +131,38 @@ commands:
         label: Volume Level
         min: 0
         max: 100
+        help: "Volume level 0-100"
 
   mute_on:
     label: Mute Audio
     send: "1Z"
+    help: "Mute the audio output."
 
   mute_off:
     label: Unmute Audio
     send: "0Z"
+    help: "Unmute the audio output."
 
   mute_toggle:
     label: Toggle Mute
     send: "Z"
+    help: "Toggle audio mute on/off."
 
   # Video mute (AV mute) - available on many SIS devices
   video_mute_on:
     label: Video Mute On
     send: "1B"
+    help: "Blank the video output (audio continues)."
 
   video_mute_off:
     label: Video Mute Off
     send: "0B"
+    help: "Restore the video output."
 
   recall_preset:
     label: Recall Preset
     send: "{preset}."
+    help: "Recall a saved routing preset."
     params:
       preset:
         type: integer
@@ -148,10 +170,12 @@ commands:
         label: Preset Number
         min: 1
         max: 32
+        help: "Preset number 1-32"
 
   save_preset:
     label: Save Preset
     send: "{preset},."
+    help: "Save the current routing configuration to a preset."
     params:
       preset:
         type: integer
@@ -159,6 +183,7 @@ commands:
         label: Preset Number
         min: 1
         max: 32
+        help: "Preset number 1-32"
 
 responses:
   # Input routing response: "In1 All" or "In1 Out2"

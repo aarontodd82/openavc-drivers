@@ -33,6 +33,7 @@ projectors/          # Projector control (PJLink, Sony ADCP, etc.)
 displays/            # Commercial displays (Samsung, LG, NEC, Sony)
 switchers/           # Matrix switchers, presentation switchers, scalers
 audio/               # DSPs, mixers, amplifiers, microphones
+video/               # Video production software (vMix, OBS, Wirecast, TriCaster)
 cameras/             # PTZ cameras (VISCA, Panasonic AW, etc.)
 lighting/            # DMX, Art-Net, sACN, architectural lighting
 utility/             # Wake-on-LAN, relays, generic TCP/serial, bridges
@@ -47,7 +48,7 @@ index.json           # Driver catalog (used by the Browse Drivers UI)
 4. Update `index.json` with your driver's metadata
 5. Submit a pull request
 
-See the [Driver Creation Guide](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) for full documentation on both YAML and Python driver formats.
+See the [Contributing Guide](docs/contributing-drivers.md) for the full checklist, and the [Driver Creation Guide](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) in the main repo for complete documentation on YAML and Python driver formats.
 
 ## License
 

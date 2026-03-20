@@ -36,6 +36,18 @@ description: >
 transport: tcp
 delimiter: "\r\n"
 
+help:
+  overview: >
+    Controls Biamp Tesira and TesiraFORTE DSPs via the TTP protocol. Supports
+    level control, mute, and preset recall. Configure Instance Tags to match
+    your Tesira design file.
+  setup: >
+    1. Connect the Tesira DSP to the network.
+    2. Default control port is 23 (Telnet).
+    3. Set the Instance Tags to match your Tesira design file
+       (e.g., "PgmLevel" for the program level fader).
+    4. Instance Tags are user-assigned labels in the Biamp Tesira software.
+
 default_config:
   host: ""
   port: 23
@@ -91,6 +103,7 @@ commands:
   set_level:
     label: Set Level
     send: '{level_instance_tag} set level 1 {level}\n'
+    help: "Set the audio level for the configured level control block."
     params:
       level:
         type: number
@@ -99,46 +112,56 @@ commands:
         min: -100
         max: 12
         description: "Level in dB. Typical range: -100.0 to +12.0"
+        help: "Level in dB (-100.0 to +12.0)"
 
   increment_level:
     label: Increment Level
     send: '{level_instance_tag} increment level 1 {amount}\n'
+    help: "Increase the level by a specified amount in dB."
     params:
       amount:
         type: number
         default: 1.0
         label: Amount (dB)
+        help: "Amount to increase in dB"
 
   decrement_level:
     label: Decrement Level
     send: '{level_instance_tag} decrement level 1 {amount}\n'
+    help: "Decrease the level by a specified amount in dB."
     params:
       amount:
         type: number
         default: 1.0
         label: Amount (dB)
+        help: "Amount to decrease in dB"
 
   mute_on:
     label: Mute On
     send: '{mute_instance_tag} set mute 1 true\n'
+    help: "Mute the configured mute block."
 
   mute_off:
     label: Mute Off
     send: '{mute_instance_tag} set mute 1 false\n'
+    help: "Unmute the configured mute block."
 
   mute_toggle:
     label: Toggle Mute
     send: '{mute_instance_tag} toggle mute 1\n'
+    help: "Toggle mute on/off."
 
   recall_preset:
     label: Recall Preset
     send: '{preset_instance_tag} recall {preset}\n'
+    help: "Recall a saved preset/snapshot in the Tesira design."
     params:
       preset:
         type: integer
         required: true
         label: Preset Number
         min: 1
+        help: "Preset/snapshot number to recall"
 
 responses:
   # Level response: +OK "value":"-12.5"

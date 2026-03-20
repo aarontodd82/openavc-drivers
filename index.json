@@ -131,6 +131,19 @@
       "transport": "http",
       "verified": true,
       "description": "Controls Crestron DM NVX AV-over-IP encoders and decoders via the REST API. Supports device status, video/audio source selection, stream routing, and AV I/O monitoring."
+    },
+    {
+      "id": "vmix",
+      "name": "vMix",
+      "file": "video/vmix.py",
+      "format": "python",
+      "category": "video",
+      "manufacturer": "StudioCoast",
+      "version": "1.0.0",
+      "author": "OpenAVC",
+      "transport": "tcp",
+      "verified": true,
+      "description": "Controls vMix video production software via the TCP API. Supports transitions, input switching, audio mixing, overlays, recording, streaming, titles, replay, and PTZ."
     }
   ]
 }
