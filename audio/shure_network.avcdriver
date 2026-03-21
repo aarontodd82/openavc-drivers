@@ -30,6 +30,10 @@ description: >
 transport: tcp
 delimiter: ">"
 
+discovery:
+  ports: [2202]
+  mac_prefixes: ["00:0e:dd"]
+
 default_config:
   host: ""
   port: 2202

@@ -41,7 +41,9 @@ Add an entry to the `drivers` array in `index.json`:
     "author": "Your Name",
     "transport": "tcp",
     "verified": false,
-    "description": "One-line description of what equipment this controls."
+    "description": "One-line description of what equipment this controls.",
+    "protocols": ["your_protocol_name"],
+    "ports": [23]
 }
 ```
 
@@ -53,6 +55,22 @@ Add an entry to the `drivers` array in `index.json`:
 | `category` | One of: projector, display, switcher, audio, video, camera, lighting, utility |
 | `transport` | Primary transport: tcp, serial, udp, http |
 | `verified` | Set to `false` for new contributions (maintainers verify) |
+| `protocols` | Protocol IDs that discovery probes can identify (e.g., `["pjlink"]`, `["extron_sis"]`). Helps discovery suggest your driver when it detects a matching protocol on the network. Leave as `[]` if your protocol isn't auto-detected. |
+| `ports` | TCP ports the device typically listens on (e.g., `[23]`, `[4352]`). Used by discovery to match open ports to drivers. |
+
+## Discovery Hints
+
+If your driver targets a specific device family, add a `discovery` section to the `.avcdriver` file to help OpenAVC's network scanner identify devices and suggest your driver:
+
+```yaml
+discovery:
+  ports: [23]
+  mac_prefixes: ["00:05:a6"]
+```
+
+See the [Creating Drivers](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) guide for the full list of discovery hint fields (ports, MAC prefixes, mDNS services, hostname patterns).
+
+Even without explicit discovery hints, the driver's `manufacturer`, `category`, and `default_config.port` are used as basic matching signals. Adding hints makes discovery noticeably more accurate.
 
 ## Help Text
 

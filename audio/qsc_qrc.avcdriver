@@ -38,6 +38,10 @@ description: >
 transport: tcp
 delimiter: "\r\n"
 
+discovery:
+  ports: [1702, 52000]
+  mac_prefixes: ["00:0c:4d", "7c:2e:0d"]
+
 default_config:
   host: ""
   port: 1702

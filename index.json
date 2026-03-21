@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "updated": "2026-03-16",
+  "version": "1.1.0",
+  "updated": "2026-03-21",
   "drivers": [
     {
       "id": "pjlink_class1",
@@ -13,7 +13,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls any PJLink Class 1 compatible projector. Supports 100+ models from Epson, NEC, Panasonic, Sony, Christie, Hitachi, BenQ, Optoma, Canon, and Vivitek."
+      "description": "Controls any PJLink Class 1 compatible projector. Supports 100+ models from Epson, NEC, Panasonic, Sony, Christie, Hitachi, BenQ, Optoma, Canon, and Vivitek.",
+      "protocols": ["pjlink"],
+      "ports": [4352]
     },
     {
       "id": "samsung_mdc",
@@ -26,7 +28,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls Samsung commercial displays via the MDC (Multiple Display Control) binary protocol. Covers Smart Signage, The Wall, and LED series."
+      "description": "Controls Samsung commercial displays via the MDC (Multiple Display Control) binary protocol. Covers Smart Signage, The Wall, and LED series.",
+      "protocols": ["samsung_mdc"],
+      "ports": [1515]
     },
     {
       "id": "wake_on_lan",
@@ -39,7 +43,9 @@
       "author": "OpenAVC",
       "transport": "udp",
       "verified": true,
-      "description": "Send Wake-on-LAN magic packets to wake any Ethernet device on the network."
+      "description": "Send Wake-on-LAN magic packets to wake any Ethernet device on the network.",
+      "protocols": [],
+      "ports": []
     },
     {
       "id": "extron_sis",
@@ -52,7 +58,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls Extron products via the SIS (Simple Instruction Set) protocol. Covers 200+ products: crosspoint matrix switchers, presentation switchers, scalers, distribution amplifiers, and DSPs."
+      "description": "Controls Extron products via the SIS (Simple Instruction Set) protocol. Covers 200+ products: crosspoint matrix switchers, presentation switchers, scalers, distribution amplifiers, and DSPs.",
+      "protocols": ["extron_sis"],
+      "ports": [23]
     },
     {
       "id": "lg_sicp",
@@ -65,7 +73,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls LG commercial displays via the SICP (Serial Interface Communication Protocol) over TCP. Covers webOS signage displays, LED, and OLED commercial series."
+      "description": "Controls LG commercial displays via the SICP (Serial Interface Communication Protocol) over TCP. Covers webOS signage displays, LED, and OLED commercial series.",
+      "protocols": [],
+      "ports": [9761]
     },
     {
       "id": "kramer_p3000",
@@ -78,7 +88,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls Kramer products via Protocol 3000. Covers matrix switchers, scalers, distribution amplifiers, and Via wireless presentation systems."
+      "description": "Controls Kramer products via Protocol 3000. Covers matrix switchers, scalers, distribution amplifiers, and Via wireless presentation systems.",
+      "protocols": ["kramer_p3000"],
+      "ports": [5000, 23]
     },
     {
       "id": "biamp_tesira_ttp",
@@ -91,7 +103,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls Biamp Tesira and TesiraFORTE DSPs via the TTP (Tesira Text Protocol). Supports level, mute, preset recall, and logic state control."
+      "description": "Controls Biamp Tesira and TesiraFORTE DSPs via the TTP (Tesira Text Protocol). Supports level, mute, preset recall, and logic state control.",
+      "protocols": ["biamp_tesira"],
+      "ports": [23]
     },
     {
       "id": "shure_network",
@@ -104,7 +118,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls Shure networked audio devices via TCP command strings. Covers MXA910/920/710 ceiling microphone arrays, ANI interfaces, P300 IntelliMix, and SCM820 mixers."
+      "description": "Controls Shure networked audio devices via TCP command strings. Covers MXA910/920/710 ceiling microphone arrays, ANI interfaces, P300 IntelliMix, and SCM820 mixers.",
+      "protocols": ["shure_dcs"],
+      "ports": [2202]
     },
     {
       "id": "qsc_qrc",
@@ -117,7 +133,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls QSC Q-SYS Core processors via the QRC (Q-SYS Remote Control) protocol. Supports named controls, snapshots, and component access across the entire Q-SYS ecosystem."
+      "description": "Controls QSC Q-SYS Core processors via the QRC (Q-SYS Remote Control) protocol. Supports named controls, snapshots, and component access across the entire Q-SYS ecosystem.",
+      "protocols": ["qsc"],
+      "ports": [1702, 52000]
     },
     {
       "id": "crestron_nvx",
@@ -130,7 +148,9 @@
       "author": "OpenAVC",
       "transport": "http",
       "verified": true,
-      "description": "Controls Crestron DM NVX AV-over-IP encoders and decoders via the REST API. Supports device status, video/audio source selection, stream routing, and AV I/O monitoring."
+      "description": "Controls Crestron DM NVX AV-over-IP encoders and decoders via the REST API. Supports device status, video/audio source selection, stream routing, and AV I/O monitoring.",
+      "protocols": ["crestron_cip"],
+      "ports": [1688, 80, 443]
     },
     {
       "id": "vmix",
@@ -143,7 +163,9 @@
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": true,
-      "description": "Controls vMix video production software via the TCP API. Supports transitions, input switching, audio mixing, overlays, recording, streaming, titles, replay, and PTZ."
+      "description": "Controls vMix video production software via the TCP API. Supports transitions, input switching, audio mixing, overlays, recording, streaming, titles, replay, and PTZ.",
+      "protocols": [],
+      "ports": [8088]
     }
   ]
 }

@@ -30,6 +30,10 @@ description: >
 transport: tcp
 delimiter: "\r\n"
 
+discovery:
+  ports: [5000, 23]
+  mac_prefixes: ["00:0a:9a"]
+
 default_config:
   host: ""
   port: 5000

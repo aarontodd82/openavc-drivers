@@ -48,6 +48,10 @@ help:
        (e.g., "PgmLevel" for the program level fader).
     4. Instance Tags are user-assigned labels in the Biamp Tesira software.
 
+discovery:
+  ports: [23]
+  mac_prefixes: ["00:90:5e"]
+
 default_config:
   host: ""
   port: 23

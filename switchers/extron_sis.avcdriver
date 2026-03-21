@@ -47,6 +47,10 @@ help:
     2. For TCP control, set the device's IP address and use port 23 (default).
     3. Extron recommends a 100ms delay between commands (pre-configured).
 
+discovery:
+  ports: [23]
+  mac_prefixes: ["00:05:a6"]
+
 default_config:
   host: ""
   port: 23

@@ -39,6 +39,10 @@ help:
     2. Default control port is 9761.
     3. Set the Display ID (01-99, or 00 for broadcast to all displays).
 
+discovery:
+  ports: [9761]
+  mac_prefixes: ["00:05:c9", "00:e0:91", "10:68:3f", "2c:54:cf", "34:4d:f7", "38:8c:50", "58:a2:b5", "64:99:5d", "a8:23:fe", "bc:f1:71"]
+
 default_config:
   host: ""
   port: 9761
