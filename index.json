@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "updated": "2026-03-21",
+  "version": "1.2.0",
+  "updated": "2026-03-22",
   "drivers": [
     {
       "id": "pjlink_class1",
@@ -181,6 +181,21 @@
       "description": "Controls Sonos speakers via the local UPnP API. Play/pause, volume, mute, track info, and transport control. Works with all Sonos models (S1 and S2).",
       "protocols": [],
       "ports": [1400]
+    },
+    {
+      "id": "dante_ddm",
+      "name": "Dante DDM / Director",
+      "file": "audio/dante_ddm.py",
+      "format": "python",
+      "category": "audio",
+      "manufacturer": "Audinate",
+      "version": "1.0.0",
+      "author": "OpenAVC",
+      "transport": "http",
+      "verified": false,
+      "description": "Controls Dante audio routing via the Audinate Managed API (GraphQL). Requires Dante Domain Manager or Dante Director Professional. Discover devices, route/unroute channels, monitor subscriptions.",
+      "protocols": [],
+      "ports": [443]
     }
   ]
 }
