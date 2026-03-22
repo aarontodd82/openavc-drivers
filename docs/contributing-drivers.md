@@ -120,6 +120,12 @@ DRIVER_INFO = {
 }
 ```
 
+## Device Log
+
+All transport traffic (TX/RX) is automatically logged in the Programmer IDE's device log — you do not need to add any logging code for protocol communication. If your Python driver overrides `connect()` and creates its own transport, pass `name=self.device_id` so the log entries are tagged with the device name.
+
+Add your own `log.info(f"[{self.device_id}] ...")` calls only for semantic events that interpret protocol data into meaningful state (e.g., "Power: warming" after parsing a status code).
+
 ## Testing Requirements
 
 - Test all commands against real hardware or a simulator

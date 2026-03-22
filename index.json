@@ -166,6 +166,21 @@
       "description": "Controls vMix video production software via the TCP API. Supports transitions, input switching, audio mixing, overlays, recording, streaming, titles, replay, and PTZ.",
       "protocols": [],
       "ports": [8088]
+    },
+    {
+      "id": "sonos",
+      "name": "Sonos Speaker",
+      "file": "audio/sonos.py",
+      "format": "python",
+      "category": "audio",
+      "manufacturer": "Sonos",
+      "version": "1.0.0",
+      "author": "OpenAVC",
+      "transport": "http",
+      "verified": false,
+      "description": "Controls Sonos speakers via the local UPnP API. Play/pause, volume, mute, track info, and transport control. Works with all Sonos models (S1 and S2).",
+      "protocols": [],
+      "ports": [1400]
     }
   ]
 }

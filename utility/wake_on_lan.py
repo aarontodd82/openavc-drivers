@@ -130,7 +130,7 @@ class WakeOnLANDriver(BaseDriver):
             return
 
         # Create a temporary UDP transport, send, and close
-        udp = UDPTransport()
+        udp = UDPTransport(name=self.device_id)
         try:
             await udp.open(allow_broadcast=True)
             await udp.send(packet, broadcast, port)

@@ -783,6 +783,7 @@ class VMixDriver(BaseDriver):
             on_disconnect=self._handle_transport_disconnect,
             delimiter=None,
             frame_parser=frame_parser,
+            name=self.device_id,
         )
 
         self._connected = True
