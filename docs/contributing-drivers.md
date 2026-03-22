@@ -9,9 +9,11 @@ Guide for contributing device drivers to the OpenAVC community library.
    - **Write a `.avcdriver` file** by hand (YAML, no code — for text-based protocols)
    - **Write a Python driver** (subclass `BaseDriver` — for binary/complex protocols)
 
-2. **Test thoroughly** against real hardware or a protocol simulator
+2. **Add device settings** if the device has configurable values (hostname, NDI name, video format, etc.) — see Device Settings below
 
-3. **Fork this repo** and add your driver to the appropriate category folder:
+3. **Test thoroughly** against real hardware or a protocol simulator
+
+4. **Fork this repo** and add your driver to the appropriate category folder:
    - `projectors/` — Projectors
    - `displays/` — Commercial displays
    - `switchers/` — Matrix switchers, presentation switchers, scalers
@@ -21,9 +23,9 @@ Guide for contributing device drivers to the OpenAVC community library.
    - `lighting/` — DMX, Art-Net, sACN
    - `utility/` — Wake-on-LAN, relays, bridges
 
-4. **Update `index.json`** with your driver's metadata entry
+5. **Update `index.json`** with your driver's metadata entry
 
-5. **Submit a pull request**
+6. **Submit a pull request**
 
 ## index.json Entry Format
 
@@ -119,6 +121,25 @@ DRIVER_INFO = {
     },
 }
 ```
+
+## Device Settings
+
+If the device has configurable values that live **on the hardware** (not just connection config), add a `device_settings` section to your driver. Good candidates: device hostname, NDI source name, video format, tally mode, operation mode.
+
+Each device setting must include:
+- **`type`**: `string`, `integer`, `number`, `boolean`, or `enum`
+- **`label`**: Human-readable name
+- **`help`**: Inline help text explaining what the setting does in context
+- **`default`**: A default value
+- **`state_key`**: Which state variable provides the current value (defaults to the setting key)
+
+Optional flags:
+- **`setup: true`**: Prompt the user to configure this setting when adding the device to a project
+- **`unique: true`**: Auto-generate a non-clashing default (e.g., for NDI source names)
+
+For YAML drivers, add a `write` section describing how to push the value to the device. For Python drivers, override `set_device_setting(key, value)`.
+
+See the [Creating Drivers](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) guide for the full device_settings schema and examples.
 
 ## Device Log
 

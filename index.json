@@ -196,6 +196,36 @@
       "description": "Controls Dante audio routing via the Audinate Managed API (GraphQL). Requires Dante Domain Manager or Dante Director Professional. Discover devices, route/unroute channels, monitor subscriptions.",
       "protocols": [],
       "ports": [443]
+    },
+    {
+      "id": "birddog_ptz",
+      "name": "BirdDog PTZ Camera",
+      "file": "cameras/birddog_ptz.py",
+      "format": "python",
+      "category": "camera",
+      "manufacturer": "BirdDog",
+      "version": "1.0.0",
+      "author": "OpenAVC",
+      "transport": "http",
+      "verified": false,
+      "description": "Controls BirdDog PTZ cameras via REST API and VISCA-over-UDP. Pan, tilt, zoom, focus, presets, exposure, white balance, tally, and NDI encode settings.",
+      "protocols": ["visca"],
+      "ports": [8080, 52381]
+    },
+    {
+      "id": "birddog_codec",
+      "name": "BirdDog NDI Encoder/Decoder",
+      "file": "video/birddog_codec.py",
+      "format": "python",
+      "category": "video",
+      "manufacturer": "BirdDog",
+      "version": "1.0.0",
+      "author": "OpenAVC",
+      "transport": "http",
+      "verified": false,
+      "description": "Controls BirdDog NDI encoders and decoders via REST API. Select NDI sources on decoders, monitor input/output status, cycle through sources, reboot.",
+      "protocols": [],
+      "ports": [8080]
     }
   ]
 }

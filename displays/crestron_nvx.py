@@ -102,6 +102,31 @@ class CrestronNVXDriver(BaseDriver):
             "sync_detected": {"type": "boolean", "label": "Sync Detected"},
             "firmware": {"type": "string", "label": "Firmware Version"},
         },
+        "device_settings": {
+            "device_name": {
+                "type": "string",
+                "label": "Device Name",
+                "help": (
+                    "The friendly name shown in the NVX web UI and Crestron "
+                    "Toolbox. Helps identify this endpoint on the network."
+                ),
+                "state_key": "firmware",
+                "default": "DM-NVX",
+                "setup": True,
+                "unique": True,
+            },
+            "led_enable": {
+                "type": "boolean",
+                "label": "Front Panel LEDs",
+                "help": (
+                    "Enable or disable the front panel LED indicators. "
+                    "Disable for a cleaner look in visible installations."
+                ),
+                "state_key": "device_ready",
+                "default": True,
+                "setup": False,
+            },
+        },
         "commands": {
             "set_video_source": {
                 "label": "Set Video Source",
@@ -323,6 +348,36 @@ class CrestronNVXDriver(BaseDriver):
                 log.warning(f"[{self.device_id}] Unknown command: {command}")
 
         log.debug(f"[{self.device_id}] Sent command: {command} {params}")
+
+    async def set_device_setting(self, key: str, value: Any) -> Any:
+        """Write a device setting to the NVX via REST API."""
+        if not self._client:
+            raise ConnectionError(f"[{self.device_id}] Not connected")
+
+        match key:
+            case "device_name":
+                await self._api_post("/Device/DeviceSpecific", {
+                    "Device": {
+                        "DeviceSpecific": {
+                            "DeviceName": str(value),
+                        }
+                    }
+                })
+                log.info(f"[{self.device_id}] Set device name to '{value}'")
+
+            case "led_enable":
+                enabled = value if isinstance(value, bool) else str(value).lower() == "true"
+                await self._api_post("/Device/DeviceSpecific", {
+                    "Device": {
+                        "DeviceSpecific": {
+                            "LedsEnabled": enabled,
+                        }
+                    }
+                })
+                log.info(f"[{self.device_id}] Set LEDs {'enabled' if enabled else 'disabled'}")
+
+            case _:
+                raise ValueError(f"Unknown device setting: {key}")
 
     async def poll(self) -> None:
         """Query device status."""
