@@ -44,6 +44,9 @@ class PJLinkDriver(BaseDriver):
         "author": "OpenAVC",
         "description": "Controls any PJLink Class 1 compatible projector.",
         "transport": "tcp",
+        "discovery": {
+            "ports": [4352],
+        },
         "help": {
             "overview": (
                 "Universal projector control via the PJLink Class 1 standard. "

@@ -62,6 +62,19 @@ class WakeOnLANDriver(BaseDriver):
             "No persistent connection required."
         ),
         "transport": "udp",
+        "help": {
+            "overview": (
+                "Sends Wake-on-LAN magic packets to power on devices remotely. "
+                "Works with any Ethernet device that supports WoL (most PCs, "
+                "NUCs, some displays, and media players)."
+            ),
+            "setup": (
+                "1. Enable Wake-on-LAN in the target device's BIOS/UEFI settings\n"
+                "2. Enable WoL in the OS network adapter settings\n"
+                "3. Enter the target device's MAC address (e.g. AA:BB:CC:DD:EE:FF)\n"
+                "4. The broadcast address is usually 255.255.255.255 (default)"
+            ),
+        },
         "default_config": {
             "mac_address": "",
             "broadcast_address": "255.255.255.255",
