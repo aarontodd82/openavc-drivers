@@ -647,6 +647,10 @@ class SharpNECProjectorDriver(BaseDriver):
             bytes([target, 0xFF, mode, lo, hi]),
         )
 
+    async def _query_basic_info(self) -> None:
+        """Query 305-3 BASIC INFO to refresh power, input, mutes, freeze."""
+        await self._send(0x00, CMD_BASIC_INFO, bytes([0x02]))
+
     async def _lens_drive(self, target: int, direction: int) -> None:
         """053. LENS CONTROL — timed continuous drive.
         target: 00=zoom, 01=focus, 02=shift_h, 03=shift_v
@@ -745,6 +749,7 @@ class SharpNECProjectorDriver(BaseDriver):
                     await self._send(
                         0x02, CMD_INPUT_SELECT, bytes([0x01, code])
                     )
+                    await self._query_basic_info()
                 else:
                     log.warning(
                         f"[{self.device_id}] Unknown input '{input_name}'"
@@ -753,22 +758,30 @@ class SharpNECProjectorDriver(BaseDriver):
             # --- Mute ---
             case "picture_mute_on":
                 await self._send(0x02, CMD_PICTURE_MUTE_ON)
+                await self._query_basic_info()
             case "picture_mute_off":
                 await self._send(0x02, CMD_PICTURE_MUTE_OFF)
+                await self._query_basic_info()
             case "sound_mute_on":
                 await self._send(0x02, CMD_SOUND_MUTE_ON)
+                await self._query_basic_info()
             case "sound_mute_off":
                 await self._send(0x02, CMD_SOUND_MUTE_OFF)
+                await self._query_basic_info()
             case "onscreen_mute_on":
                 await self._send(0x02, CMD_OSD_MUTE_ON)
+                await self._query_basic_info()
             case "onscreen_mute_off":
                 await self._send(0x02, CMD_OSD_MUTE_OFF)
+                await self._query_basic_info()
 
             # --- Freeze ---
             case "freeze_on":
                 await self._send(0x01, CMD_FREEZE, bytes([0x01]))
+                await self._query_basic_info()
             case "freeze_off":
                 await self._send(0x01, CMD_FREEZE, bytes([0x02]))
+                await self._query_basic_info()
 
             # --- Shutter ---
             case "shutter_close":
