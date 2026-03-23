@@ -989,14 +989,14 @@ class SharpNECProjectorDriver(BaseDriver):
     def _handle_query_response(self, cmd: int, payload: bytes) -> None:
         """Handle 23h responses (adjust/query)."""
 
-        # 037-4 Lamp info
+        # 037-4 Lamp info (4-byte little-endian seconds in DATA03-06)
         if cmd == CMD_LAMP_INFO and len(payload) >= 6:
             content = payload[1]
             value = (
-                (payload[2] << 24)
-                | (payload[3] << 16)
-                | (payload[4] << 8)
-                | payload[5]
+                payload[2]
+                | (payload[3] << 8)
+                | (payload[4] << 16)
+                | (payload[5] << 24)
             )
             if content == 0x01:
                 hours = value // 3600
@@ -1006,13 +1006,13 @@ class SharpNECProjectorDriver(BaseDriver):
                 self.set_state("lamp_life_remaining", value)
                 log.info(f"[{self.device_id}] Light source life: {value}%")
 
-        # 037-3 Filter info
+        # 037-3 Filter info (4-byte little-endian seconds in DATA01-04)
         elif cmd == CMD_FILTER_INFO and len(payload) >= 4:
             seconds = (
-                (payload[0] << 24)
-                | (payload[1] << 16)
-                | (payload[2] << 8)
-                | payload[3]
+                payload[0]
+                | (payload[1] << 8)
+                | (payload[2] << 16)
+                | (payload[3] << 24)
             )
             hours = seconds // 3600
             self.set_state("filter_hours", hours)
