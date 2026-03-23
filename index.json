@@ -9,11 +9,11 @@
       "format": "python",
       "category": "projector",
       "manufacturer": "Sharp NEC",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "author": "OpenAVC",
       "transport": "tcp",
       "verified": false,
-      "description": "Controls Sharp NEC projectors via the NEC binary control protocol. Compatible with P, PA, PE, PV, PX, ME, and M series. Deeper control than PJLink — dedicated inputs, picture/sound mute, light source hours.",
+      "description": "Full-featured Sharp NEC projector control via the NEC binary protocol. Power, inputs, mutes, freeze, shutter, volume, brightness, contrast, aspect, eco mode, lens control, lens memory, lamp hours, filter hours, error status, remote key emulation. Compatible with P, PA, PE, PV, PX, ME, M series.",
       "protocols": ["nec_binary"],
       "ports": [7142]
     },
