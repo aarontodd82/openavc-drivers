@@ -1,7 +1,22 @@
 {
-  "version": "1.2.0",
-  "updated": "2026-03-22",
+  "version": "1.3.0",
+  "updated": "2026-03-23",
   "drivers": [
+    {
+      "id": "sharp_nec_projector",
+      "name": "Sharp NEC Projector",
+      "file": "projectors/sharp_nec_projector.py",
+      "format": "python",
+      "category": "projector",
+      "manufacturer": "Sharp NEC",
+      "version": "1.0.0",
+      "author": "OpenAVC",
+      "transport": "tcp",
+      "verified": false,
+      "description": "Controls Sharp NEC projectors via the NEC binary control protocol. Compatible with P, PA, PE, PV, PX, ME, and M series. Deeper control than PJLink — dedicated inputs, picture/sound mute, light source hours.",
+      "protocols": ["nec_binary"],
+      "ports": [7142]
+    },
     {
       "id": "pjlink_class1",
       "name": "PJLink Class 1 Projector",
