@@ -70,7 +70,7 @@ discovery:
   mac_prefixes: ["00:05:a6"]
 ```
 
-See the [Creating Drivers](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) guide for the full list of discovery hint fields (ports, MAC prefixes, mDNS services, hostname patterns).
+See the [Creating Drivers](https://github.com/open-avc/openavc/blob/main/docs/creating-drivers.md) guide for the full list of discovery hint fields (ports, MAC prefixes, mDNS services, hostname patterns).
 
 Even without explicit discovery hints, the driver's `manufacturer`, `category`, and `default_config.port` are used as basic matching signals. Adding hints makes discovery noticeably more accurate.
 
@@ -139,7 +139,7 @@ Optional flags:
 
 For YAML drivers, add a `write` section describing how to push the value to the device. For Python drivers, override `set_device_setting(key, value)`.
 
-See the [Creating Drivers](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) guide for the full device_settings schema and examples.
+See the [Creating Drivers](https://github.com/open-avc/openavc/blob/main/docs/creating-drivers.md) guide for the full device_settings schema and examples.
 
 ## Device Log
 
@@ -166,4 +166,4 @@ All contributed drivers must be released under the **MIT License**. By submittin
 
 ## Driver Creation Reference
 
-For complete documentation on driver formats, the `.avcdriver` YAML schema, Python driver API, and the Driver Builder UI, see the [Creating Drivers](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) guide in the main OpenAVC repo.
+For complete documentation on driver formats, the `.avcdriver` YAML schema, Python driver API, and the Driver Builder UI, see the [Creating Drivers](https://github.com/open-avc/openavc/blob/main/docs/creating-drivers.md) guide in the main OpenAVC repo.

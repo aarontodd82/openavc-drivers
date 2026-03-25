@@ -1,6 +1,6 @@
 # OpenAVC Community Driver Library
 
-Device drivers for the [OpenAVC](https://github.com/openavc/openavc) open-source AV control platform.
+Device drivers for the [OpenAVC](https://github.com/open-avc/openavc) open-source AV control platform.
 
 ## What's Here
 
@@ -48,7 +48,7 @@ index.json           # Driver catalog (used by the Browse Drivers UI)
 4. Update `index.json` with your driver's metadata
 5. Submit a pull request
 
-See the [Contributing Guide](docs/contributing-drivers.md) for the full checklist, and the [Driver Creation Guide](https://github.com/openavc/openavc/blob/main/docs/creating-drivers.md) in the main repo for complete documentation on YAML and Python driver formats.
+See the [Contributing Guide](docs/contributing-drivers.md) for the full checklist, and the [Driver Creation Guide](https://github.com/open-avc/openavc/blob/main/docs/creating-drivers.md) in the main repo for complete documentation on YAML and Python driver formats.
 
 ## License
 
