@@ -13,12 +13,14 @@ To configure PSK on the TV:
         - Simple IP Control: On (also enables Remote Start for power-on)
 
 API overview:
-    POST /sony/system    - Power, system info, LED indicator, remote codes
-    POST /sony/audio     - Volume, mute
-    POST /sony/avContent - Input selection, playing content info
+    POST /sony/system     - Power, system info, LED indicator, remote codes
+    POST /sony/audio      - Volume, mute
+    POST /sony/avContent  - Input selection, playing content info
     POST /sony/appControl - Application launch
+    POST /sony/IRCC       - SOAP-based IR remote code emulation (navigation,
+                            media transport, app shortcuts, etc.)
 
-Each request is a JSON-RPC call:
+Each JSON-RPC request:
     {"method": "<name>", "params": [<args>], "id": <n>, "version": "1.0"}
 
 Protocol reference: https://pro-bravia.sony.net/develop/integrate/rest-api/spec/
@@ -46,6 +48,118 @@ INPUT_URI_MAP = {
 # Reverse: URI to friendly name
 URI_INPUT_MAP = {v: k for k, v in INPUT_URI_MAP.items()}
 
+# IRCC (IR Compatible Control over IP) codes for remote button emulation.
+# These are base64-encoded command codes sent via SOAP to /sony/IRCC.
+# Codes are standardized across Sony Bravia models.
+IRCC_CODES = {
+    # Navigation
+    "up": "AAAAAQAAAAEAAAB0Aw==",
+    "down": "AAAAAQAAAAEAAAB1Aw==",
+    "left": "AAAAAQAAAAEAAAB2Aw==",
+    "right": "AAAAAQAAAAEAAAB3Aw==",
+    "confirm": "AAAAAQAAAAEAAABlAw==",
+    "back": "AAAAAgAAAJcAAAAjAw==",
+    "home": "AAAAAQAAAAEAAABgAw==",
+    # Media transport
+    "play": "AAAAAgAAAJcAAAAaAw==",
+    "pause": "AAAAAgAAAJcAAAAZAw==",
+    "stop": "AAAAAgAAAJcAAAAYAw==",
+    "rewind": "AAAAAgAAAJcAAAAbAw==",
+    "forward": "AAAAAgAAAJcAAAAcAw==",
+    # Channel
+    "channel_up": "AAAAAQAAAAEAAAAQAw==",
+    "channel_down": "AAAAAQAAAAEAAAARAw==",
+    # App shortcuts
+    "netflix": "AAAAAgAAABoAAAB8Aw==",
+    # Display
+    "info": "AAAAAQAAAAEAAAB/Aw==",
+    "input_toggle": "AAAAAQAAAAEAAAAlAw==",
+    "pic_off": "AAAAAQAAAAEAAAARAA==",
+    # Number pad
+    "num_0": "AAAAAQAAAAEAAAAJAw==",
+    "num_1": "AAAAAQAAAAEAAAAAAw==",
+    "num_2": "AAAAAQAAAAEAAAABAw==",
+    "num_3": "AAAAAQAAAAEAAAACAw==",
+    "num_4": "AAAAAQAAAAEAAAADAw==",
+    "num_5": "AAAAAQAAAAEAAAAEAw==",
+    "num_6": "AAAAAQAAAAEAAAAFAw==",
+    "num_7": "AAAAAQAAAAEAAAAGAw==",
+    "num_8": "AAAAAQAAAAEAAAAHAw==",
+    "num_9": "AAAAAQAAAAEAAAAIAw==",
+}
+
+# Build IRCC command entries for DRIVER_INFO
+_IRCC_COMMANDS = {
+    # Navigation
+    "nav_up": {"label": "Navigate Up", "params": {}, "help": "D-pad up."},
+    "nav_down": {"label": "Navigate Down", "params": {}, "help": "D-pad down."},
+    "nav_left": {"label": "Navigate Left", "params": {}, "help": "D-pad left."},
+    "nav_right": {"label": "Navigate Right", "params": {}, "help": "D-pad right."},
+    "nav_select": {"label": "Select / Confirm", "params": {}, "help": "D-pad center (OK/Enter)."},
+    "nav_back": {"label": "Back", "params": {}, "help": "Return to previous screen."},
+    "nav_home": {"label": "Home", "params": {}, "help": "Go to the home screen."},
+    # Media transport
+    "media_play": {"label": "Play", "params": {}, "help": "Start or resume playback."},
+    "media_pause": {"label": "Pause", "params": {}, "help": "Pause playback."},
+    "media_stop": {"label": "Stop", "params": {}, "help": "Stop playback."},
+    "media_rewind": {"label": "Rewind", "params": {}, "help": "Rewind."},
+    "media_forward": {"label": "Fast Forward", "params": {}, "help": "Fast forward."},
+    # Channel
+    "channel_up": {"label": "Channel Up", "params": {}, "help": "Next channel."},
+    "channel_down": {"label": "Channel Down", "params": {}, "help": "Previous channel."},
+    # Apps
+    "launch_netflix": {"label": "Netflix", "params": {}, "help": "Launch the Netflix app."},
+    "launch_app": {
+        "label": "Launch App",
+        "params": {
+            "uri": {
+                "type": "string",
+                "required": True,
+                "help": "Application URI (use the get_apps command to find URIs)",
+            },
+        },
+        "help": "Launch an app by URI.",
+    },
+    # Display
+    "info_display": {"label": "Info / Display", "params": {}, "help": "Toggle on-screen info overlay."},
+    "input_toggle": {"label": "Input Toggle", "params": {}, "help": "Cycle through inputs (same as the Input button on the remote)."},
+    "pic_off": {"label": "Picture Off", "params": {}, "help": "Turn off the screen (audio keeps playing). Press any key to restore."},
+    # IRCC passthrough
+    "send_ircc": {
+        "label": "Send IRCC Code",
+        "params": {
+            "code": {
+                "type": "string",
+                "required": True,
+                "help": "Base64-encoded IRCC code to send",
+            },
+        },
+        "help": "Send a raw IRCC remote code (for buttons not covered by other commands).",
+    },
+}
+
+# Map command names to IRCC code keys
+_CMD_TO_IRCC = {
+    "nav_up": "up",
+    "nav_down": "down",
+    "nav_left": "left",
+    "nav_right": "right",
+    "nav_select": "confirm",
+    "nav_back": "back",
+    "nav_home": "home",
+    "media_play": "play",
+    "media_pause": "pause",
+    "media_stop": "stop",
+    "media_rewind": "rewind",
+    "media_forward": "forward",
+    "channel_up": "channel_up",
+    "channel_down": "channel_down",
+    "launch_netflix": "netflix",
+    "info_display": "info",
+    "input_toggle": "input_toggle",
+    "pic_off": "pic_off",
+}
+
 
 class SonyBraviaDriver(BaseDriver):
     """Sony Bravia JSON-RPC REST API driver."""
@@ -55,19 +169,20 @@ class SonyBraviaDriver(BaseDriver):
         "name": "Sony Bravia Display",
         "manufacturer": "Sony",
         "category": "display",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "author": "OpenAVC",
         "description": (
             "Controls Sony Bravia TVs and professional displays via the "
-            "JSON-RPC REST API. Supports power, input, volume, mute. "
+            "JSON-RPC REST API and IRCC remote emulation. Power, input, "
+            "volume, mute, navigation, media transport, app launch. "
             "Covers Android TV, Google TV, and Pro Bravia models."
         ),
         "transport": "http",
         "help": {
             "overview": (
-                "Controls Sony Bravia displays using the built-in REST API. "
-                "Works with Android TV, Google TV, and Pro Bravia series from "
-                "~2013 onwards (W, X, Z, A, XR models)."
+                "Controls Sony Bravia displays using the built-in REST API "
+                "and IRCC remote emulation. Works with Android TV, Google TV, "
+                "and Pro Bravia series from ~2013 onwards (W, X, Z, A, XR models)."
             ),
             "setup": (
                 "1. Connect the TV to the network.\n"
@@ -134,8 +249,7 @@ class SonyBraviaDriver(BaseDriver):
                 "label": "Power State",
             },
             "input": {
-                "type": "enum",
-                "values": list(INPUT_URI_MAP.keys()),
+                "type": "string",
                 "label": "Input Source",
             },
             "volume": {
@@ -146,12 +260,17 @@ class SonyBraviaDriver(BaseDriver):
                 "type": "boolean",
                 "label": "Audio Mute",
             },
+            "app": {
+                "type": "string",
+                "label": "Current App",
+            },
             "model": {
                 "type": "string",
                 "label": "Model Name",
             },
         },
         "commands": {
+            # Power
             "power_on": {
                 "label": "Power On",
                 "params": {},
@@ -162,6 +281,7 @@ class SonyBraviaDriver(BaseDriver):
                 "params": {},
                 "help": "Turn off the display (standby).",
             },
+            # Volume
             "set_volume": {
                 "label": "Set Volume",
                 "params": {
@@ -195,6 +315,7 @@ class SonyBraviaDriver(BaseDriver):
                 "params": {},
                 "help": "Unmute the audio.",
             },
+            # Input
             "set_input": {
                 "label": "Set Input",
                 "params": {
@@ -207,6 +328,8 @@ class SonyBraviaDriver(BaseDriver):
                 },
                 "help": "Switch the display input source.",
             },
+            # IRCC commands (navigation, media, apps, etc.)
+            **_IRCC_COMMANDS,
         },
     }
 
@@ -241,6 +364,8 @@ class SonyBraviaDriver(BaseDriver):
         poll_interval = self.config.get("poll_interval", 15)
         if poll_interval > 0:
             await self.start_polling(poll_interval)
+
+    # --- JSON-RPC helper ---
 
     async def _jsonrpc(
         self,
@@ -284,12 +409,52 @@ class SonyBraviaDriver(BaseDriver):
                 return data["result"]
             if data and "error" in data:
                 err = data["error"]
-                log.warning(f"[{self.device_id}] {service}/{method} error: {err}")
+                # Error code 7 = "Illegal State" (TV in app or standby).
+                # Error code 40400 = method not found on this model.
+                # Don't spam logs for expected transient errors.
+                err_code = err[0] if isinstance(err, list) and err else None
+                if err_code not in (7, 40400):
+                    log.warning(
+                        f"[{self.device_id}] {service}/{method} error: {err}"
+                    )
                 return None
             return data
         except Exception as e:
             log.warning(f"[{self.device_id}] {service}/{method} failed: {e}")
             return None
+
+    # --- IRCC (IR remote emulation via SOAP) ---
+
+    async def _send_ircc(self, code: str) -> None:
+        """Send an IRCC remote code via SOAP to /sony/IRCC."""
+        if not self.transport or not self.transport.connected:
+            raise ConnectionError(f"[{self.device_id}] Not connected")
+
+        soap_body = (
+            '<?xml version="1.0"?>'
+            '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" '
+            's:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'
+            "<s:Body>"
+            '<u:X_SendIRCC xmlns:u="urn:schemas-sony-com:service:IRCC:1">'
+            f"<IRCCCode>{code}</IRCCCode>"
+            "</u:X_SendIRCC>"
+            "</s:Body>"
+            "</s:Envelope>"
+        )
+        try:
+            await self.transport.request(
+                "POST",
+                "/sony/IRCC",
+                content=soap_body.encode("utf-8"),
+                headers={
+                    "Content-Type": "text/xml; charset=UTF-8",
+                    "SOAPACTION": '"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC"',
+                },
+            )
+        except Exception as e:
+            log.warning(f"[{self.device_id}] IRCC send failed: {e}")
+
+    # --- System info ---
 
     async def _fetch_system_info(self) -> None:
         """Query and cache the TV model name."""
@@ -301,6 +466,8 @@ class SonyBraviaDriver(BaseDriver):
                 self.set_state("model", model)
                 log.info(f"[{self.device_id}] Model: {model}")
 
+    # --- Commands ---
+
     async def send_command(
         self, command: str, params: dict[str, Any] | None = None
     ) -> Any:
@@ -309,6 +476,14 @@ class SonyBraviaDriver(BaseDriver):
 
         if not self.transport or not self.transport.connected:
             raise ConnectionError(f"[{self.device_id}] Not connected")
+
+        # Check if this is an IRCC-mapped command
+        ircc_key = _CMD_TO_IRCC.get(command)
+        if ircc_key:
+            code = IRCC_CODES[ircc_key]
+            await self._send_ircc(code)
+            log.debug(f"[{self.device_id}] IRCC: {command} -> {ircc_key}")
+            return
 
         match command:
             case "power_on":
@@ -357,10 +532,22 @@ class SonyBraviaDriver(BaseDriver):
                     log.warning(
                         f"[{self.device_id}] Unknown input: {input_name}"
                     )
+            case "launch_app":
+                uri = params.get("uri", "")
+                if uri:
+                    await self._jsonrpc(
+                        "appControl", "setActiveApp", [{"uri": uri}]
+                    )
+            case "send_ircc":
+                code = params.get("code", "")
+                if code:
+                    await self._send_ircc(code)
             case _:
                 log.warning(f"[{self.device_id}] Unknown command: {command}")
 
         log.debug(f"[{self.device_id}] Sent command: {command} {params}")
+
+    # --- Polling ---
 
     async def poll(self) -> None:
         """Query the TV for current power, volume, and input status."""
@@ -380,7 +567,6 @@ class SonyBraviaDriver(BaseDriver):
         # Volume and mute
         result = await self._jsonrpc("audio", "getVolumeInformation")
         if result and isinstance(result, list):
-            # Find the "speaker" target in the result list
             for item_list in result:
                 if isinstance(item_list, list):
                     for item in item_list:
@@ -393,10 +579,20 @@ class SonyBraviaDriver(BaseDriver):
                     self.set_state("mute", bool(item_list.get("mute", False)))
                     break
 
-        # Current input
+        # Current input / app (may return Illegal State error code 7 if the
+        # TV is in an internal app rather than an external input, which is
+        # expected and silenced in _jsonrpc).
         result = await self._jsonrpc("avContent", "getPlayingContentInfo")
         if result and isinstance(result, list) and len(result) > 0:
-            uri = result[0].get("uri", "")
-            input_name = URI_INPUT_MAP.get(uri, uri)
+            info = result[0]
+            uri = info.get("uri", "")
+            title = info.get("title", "")
+
+            input_name = URI_INPUT_MAP.get(uri)
             if input_name:
                 self.set_state("input", input_name)
+                self.set_state("app", "")
+            else:
+                # In an app or internal source
+                self.set_state("input", "app")
+                self.set_state("app", title or uri)
