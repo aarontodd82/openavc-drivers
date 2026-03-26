@@ -216,7 +216,7 @@ class SonyBraviaDriver(BaseDriver):
         """Set up HTTP transport with PSK authentication."""
         host = self.config.get("host", "")
         port = self.config.get("port", 80)
-        psk = self.config.get("psk", "")
+        psk = str(self.config.get("psk", ""))
         base_url = f"http://{host}:{port}"
 
         self.transport = HTTPClientTransport(
